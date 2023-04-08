@@ -4,3 +4,10 @@ The Axios class is a VBA project that allows you to make HTTP requests with an e
 ## Properties
 
 ### baseURL
+The base URL for the request.
+
+#### Syntax
+```vba
+Public Property Get baseURL() As String
+Public Property Let baseURL(value As String)
+```
