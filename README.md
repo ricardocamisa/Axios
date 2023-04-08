@@ -43,3 +43,6 @@ Sub Exemple()
     End With
 End Sub
 ```
+
+### Credits
+This project is based on the [**axios**](https://github.com/axios/axios) library for JavaScript.
