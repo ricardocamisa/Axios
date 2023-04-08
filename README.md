@@ -24,3 +24,6 @@ To create a new `Axios` request, use the `configAxios` method. This method will 
       Set .data = data
   End With
 ```
+### Send a request
+
+To send an `Axios` request, use the `Send` method and pass in the `Axios` object you want to send. The method will return the response text from the server.
