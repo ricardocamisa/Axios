@@ -1,10 +1,6 @@
-# Axios
-The Axios class is a VBA implementation of the Axios JavaScript library, which provides an easy-to-use API for making HTTP requests. This class allows you to easily configure and send HTTP requests with various methods, headers, data, and URL parameters.
+# Axios Class for VBA
+The Axios class is a VBA project that allows you to make HTTP requests with an easy-to-use interface similar to the Axios library in JavaScript. It provides methods for GET, POST, PUT, DELETE, and PATCH requests and allows you to configure headers, data, and URLs.
 
-Properties
-baseURL
-The base URL for the request.
+## Properties
 
-Syntax
-Public Property Get baseURL() As String
-Public Property Let baseURL(value As String)
+### baseURL
