@@ -3,7 +3,7 @@ The Axios class is a VBA project that allows you to make HTTP requests with an e
 
 ## Installation
 
-- Import the `Axios` class module into your VBA project, [**click here**](https://github.com/ricardocamisa/axios).
+- Import the `Axios` class module into your VBA project, [**click here**](https://github.com/ricardocamisa/Axios/blob/main/Axios.cls).
 - Import the `ConvertJson` module from the [**VBA-JSON**](https://github.com/VBA-tools/VBA-JSON) project into your VBA project.
 - To use the Axios class, you need to add the following references to your VBA project:
 
