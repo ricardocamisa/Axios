@@ -10,7 +10,7 @@ The Axios class is a VBA project that allows you to make HTTP requests with an e
     `Microsoft Scripting Runtime`
     `Microsoft XML, v6.0 (or a later version)`
 
-To add these references, open the VBA editor (Alt + F11), go to the "Tools" menu, select "References...", and check the boxes next to "Microsoft Scripting Runtime" and "Microsoft XML, v6.0" (or a later version).
+To add these references, open the VBA editor (Alt + F11), go to the "Tools" menu, select "References...", and check the boxes next to ``Microsoft Scripting Runtime`` and ``Microsoft XML, v6.0 (or a later version)``.
 
 ## Usage
 
