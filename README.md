@@ -13,17 +13,33 @@ The Axios class is a VBA project that allows you to make HTTP requests with an e
 To create a new `Axios` request, use the `configAxios` method. This method will return a new Axios object with the specified configuration.
 
 ```vba
-  Dim req As Axios
-  Set req = New Axios
+' Set the authorization token
+Public Token As String
 
-  With req
-      .baseURL = "http://localhost:3030/api"
-      .url = "/clients"
-      .method = eGET
-      Set .headers = headers
-      Set .data = data
-  End With
+Sub Exemple()
+    ' Define the request headers
+    Dim headers As Object
+    Set headers = CreateObject("Scripting.Dictionary")
+    headers("Content-Type") = "application/json"
+    headers("Authorization") = "Bearer " & Token
+
+    ' Define the request data
+    Dim data As Object
+    Set data = CreateObject("Scripting.Dictionary")
+    data("email") = "admin@gmail.com"
+    data("password") = "123"
+
+    ' Create the request configuration
+    Dim req As Axios
+    Set req = New Axios
+
+    With req
+        .baseURL = "http://localhost:3030/api"
+        .url = "/clients"
+        .method = eGET
+        Set .headers = headers
+        Set .data = data
+        Debug.Print .Send(.configAxios)
+    End With
+End Sub
 ```
-### Send a request
-
-To send an `Axios` request, use the `Send` method and pass in the `Axios` object you want to send. The method will return the response text from the server.
