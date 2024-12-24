@@ -19,41 +19,13 @@ The Axios class is a VBA project that allows you to make HTTP requests with an e
 To create a new `Axios` request, use the `configAxios` method. This method will return a new Axios object with the specified configuration.
 
 ```vba
+Option Explicit
 ' Set the authorization token
 Public Token As String
 
-Sub Exemple(identity as string, password as string)
-     Dim Axios As New Axios
-     Dim props As Object
-
-    Dim requestBody As Object
-    Dim response As String
-    
-    Set requestBody = CreateObject("Scripting.Dictionary")
-    With requestBody
-        .Add "identity", identity
-        .Add "password", password
-    End With
-
-    If InStr(response, "Erro: Não foi possível estabelecer uma ligação ao servidor") > 0 Then
-        MsgBox "Erro: Não foi possível estabelecer uma ligação ao servidor"
-    Else
-        Dim Json As Object
-        Set Json = JsonConverter.ParseJson(response)
-        
-        ' Verifica se o campo "token" existe antes de acessar
-        If Not Json Is Nothing And Json.Exists("token") Then
-            AccessToken = Json("token")
-            Debug.Print Json("token")
-            MsgBox "Seja bem-vindo de volta " & Json("record")("name"), vbInformation, "Sucesso"
-        Else
-            If Not Json Is Nothing And Json.Exists("message") Then
-                MsgBox Json("message"), vbCritical, "Erro de autenticação!"
-            Else
-                MsgBox "O campo 'token' não foi encontrado na resposta.", vbExclamation, "Erro!"
-            End If
-        End If
-    End If
+Sub teste()
+    Dim Axios As New Axios
+    Debug.Print Axios.get_("/api/collections/posts/records")
 End Sub
 ```
 
