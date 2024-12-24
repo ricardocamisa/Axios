@@ -7,73 +7,23 @@
 
 Option Explicit
 
-Public http As Object
-
-Enum HttpMethod
-    eGET = 1
-    ePOST = 2
-    ePUT = 3
-    eDELETE = 4
-    ePATCH = 5
-End Enum
-
-Private Type AxiosConfig
-    baseURL As String
+Private Type TAxios
+    baseUrl As String
     url As String
     data As Object
     headers As Object
-    method As HttpMethod
+    method As Integer
 End Type
 
-Private this As AxiosConfig
+Private this As TAxios
 
-Public Property Get baseURL() As String
-    baseURL = this.baseURL
-End Property
-
-Public Property Let baseURL(value As String)
-    this.baseURL = value
-End Property
-
-Public Property Get url() As String
-    url = this.url
-End Property
-
-Public Property Let url(value As String)
-    this.url = value
-End Property
-
-Public Property Get data() As Object
-    Set data = this.data
-End Property
-
-Public Property Set data(value As Object)
-    Set this.data = value
-End Property
-
-Public Property Get headers() As Object
-    Set headers = this.headers
-End Property
-
-Public Property Set headers(value As Object)
-    Set this.headers = value
-End Property
-
-Public Property Get method() As HttpMethod
-    method = this.method
-End Property
-
-Public Property Let method(value As HttpMethod)
-    this.method = value
-End Property
-
-Public Function configAxios() As Axios
-    Set configAxios = New Axios
-    configAxios.baseURL = this.baseURL
-    configAxios.url = this.url
-    Set configAxios.data = this.data
-    Set configAxios.headers = this.headers
-    configAxios.method = this.method
+Public Function ConfigAxios() As Axios
+    Set ConfigAxios = New Axios
+    ConfigAxios.baseUrl = this.baseUrl
+    ConfigAxios.url = this.url
+    Set ConfigAxios.data = this.data
+    Set ConfigAxios.headers = this.headers
+    ConfigAxios.method = this.method
 End Function
 
 
@@ -83,12 +33,11 @@ Public Function Send(config As Axios)
     Set http = CreateObject("MSXML2.ServerXMLHTTP")
     Dim arr: arr = Array("GET", "POST", "PUT", "DELETE", "PATCH")
     
-        
     On Error GoTo ErrorHandler
     Dim header As Variant
     
     With http
-        .Open arr(config.method - 1), config.baseURL & config.url, False
+        .Open arr(config.method - 1), config.baseUrl & config.url, False
         For Each header In config.headers
             .setRequestHeader header, config.headers(header)
         Next header
@@ -100,4 +49,61 @@ Public Function Send(config As Axios)
     
 ErrorHandler:
     Send = "Erro ao enviar solicitação: " & Err.Description
+End Function
+
+Function GET_(url As String, Optional params As String)
+    Dim headers As Object
+    Set headers = CreateObject("Scripting.Dictionary")
+    headers("Content-Type") = "application/json"
+    headers("Authorization") = "Bearer " & Token
+    
+    With Me
+        .baseUrl = baseUrl & url & "?" & params
+        .method = 1
+        .headers = headers
+        GET_ = .Send(.ConfigAxios)
+    End With
+End Function
+
+Function POST_(url As String, data As Object)
+    Dim headers As Object
+    Set headers = CreateObject("Scripting.Dictionary")
+    headers("Content-Type") = "application/json"
+    headers("Authorization") = "Bearer " & Token
+    
+    With Me
+        .baseUrl = baseUrl & url
+        .method = 2
+        .data = data
+        .headers = headers
+        POST_ = .Send(.ConfigAxios)
+    End With
+End Function
+
+Function PACTH_(url As String, data As Object)
+    Dim headers As Object
+    Set headers = CreateObject("Scripting.Dictionary")
+    headers("Content-Type") = "application/json"
+    headers("Authorization") = "Bearer " & Token
+    
+    With Me
+        .baseUrl = baseUrl & url
+        .method = 5
+        .data = data
+        .headers = headers
+        PACTH_ = .Send(.ConfigAxios)
+    End With
+End Function
+Function DELETE_(url As String)
+    Dim headers As Object
+    Set headers = CreateObject("Scripting.Dictionary")
+    headers("Content-Type") = "application/json"
+    headers("Authorization") = "Bearer " & Token
+    
+    With Me
+        .baseUrl = baseUrl & url
+        .method = 4
+        .headers = headers
+        DELETE_ = .Send(.ConfigAxios)
+    End With
 End Function
