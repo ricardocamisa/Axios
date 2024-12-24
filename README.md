@@ -22,31 +22,38 @@ To create a new `Axios` request, use the `configAxios` method. This method will 
 ' Set the authorization token
 Public Token As String
 
-Sub Exemple()
-    ' Define the request headers
-    Dim headers As Object
-    Set headers = CreateObject("Scripting.Dictionary")
-    headers("Content-Type") = "application/json"
-    headers("Authorization") = "Bearer " & Token
+Sub Exemple(identity as string, password as string)
+     Dim Axios As New Axios
+     Dim props As Object
 
-    ' Define the request data
-    Dim data As Object
-    Set data = CreateObject("Scripting.Dictionary")
-    data("email") = "admin@gmail.com"
-    data("password") = "123"
-
-    ' Create the request configuration
-    Dim req As Axios
-    Set req = New Axios
-
-    With req
-        .baseURL = "http://localhost:3030/api"
-        .url = "/clients"
-        .method = eGET
-        Set .headers = headers
-        Set .data = data
-        Debug.Print .Send(.configAxios)
+    Dim requestBody As Object
+    Dim response As String
+    
+    Set requestBody = CreateObject("Scripting.Dictionary")
+    With requestBody
+        .Add "identity", identity
+        .Add "password", password
     End With
+
+    If InStr(response, "Erro: Não foi possível estabelecer uma ligação ao servidor") > 0 Then
+        MsgBox "Erro: Não foi possível estabelecer uma ligação ao servidor"
+    Else
+        Dim Json As Object
+        Set Json = JsonConverter.ParseJson(response)
+        
+        ' Verifica se o campo "token" existe antes de acessar
+        If Not Json Is Nothing And Json.Exists("token") Then
+            AccessToken = Json("token")
+            Debug.Print Json("token")
+            MsgBox "Seja bem-vindo de volta " & Json("record")("name"), vbInformation, "Sucesso"
+        Else
+            If Not Json Is Nothing And Json.Exists("message") Then
+                MsgBox Json("message"), vbCritical, "Erro de autenticação!"
+            Else
+                MsgBox "O campo 'token' não foi encontrado na resposta.", vbExclamation, "Erro!"
+            End If
+        End If
+    End If
 End Sub
 ```
 
