@@ -1,109 +1,84 @@
-'MIT License
-
-'Copyright (c) 2023 Ricardo Camisa
-
-'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
 Option Explicit
 
-Private Type TAxios
+Private Type IInstance
     baseUrl As String
-    url As String
-    data As Object
+    timeout As Long
     headers As Object
-    method As Integer
+    data As String
 End Type
 
-Private this As TAxios
+Private this As IInstance
 
-Public Function ConfigAxios() As Axios
-    Set ConfigAxios = New Axios
-    ConfigAxios.baseUrl = this.baseUrl
-    ConfigAxios.url = this.url
-    Set ConfigAxios.data = this.data
-    Set ConfigAxios.headers = this.headers
-    ConfigAxios.method = this.method
-End Function
-
-
-Public Function Send(config As Axios)
-    Dim data As String
-    data = ConvertToJson(config.data, Whitespace:=2)
-    Set http = CreateObject("MSXML2.ServerXMLHTTP")
-    Dim arr: arr = Array("GET", "POST", "PUT", "DELETE", "PATCH")
-    
-    On Error GoTo ErrorHandler
-    Dim header As Variant
-    
-    With http
-        .Open arr(config.method - 1), config.baseUrl & config.url, False
-        For Each header In config.headers
-            .setRequestHeader header, config.headers(header)
-        Next header
-        .Send data
-        Send = .responseText
+' Constructor
+Private Sub Class_Initialize()
+    ' Inicializa a instância com valores padrão
+    With this
+        .baseUrl = "http://127.0.0.1:8090" ' URL base da API
+        .timeout = 1000
+        Set .headers = CreateObject("Scripting.Dictionary")
+        .headers("Content-Type") = "application/json"
+        .headers("Authorization") = "Bearer " & Token ' Substitua pelo seu token
     End With
+End Sub
+
+' Configura uma nova instância personalizada
+Public Sub create(baseUrl As String, Optional timeout As Long = 1000, Optional headers As Object = Nothing)
+    With this
+        .baseUrl = baseUrl
+        .timeout = timeout
+        If Not headers Is Nothing Then
+            Set .headers = headers
+        End If
+    End With
+End Sub
+
+' Função para enviar requisições
+Private Function request(method As String, endpoint As String, Optional data As Object = Nothing) As String
+    Dim http As Object
+    Set http = CreateObject("MSXML2.ServerXMLHTTP")
+    this.data = ConvertToJson(data, Whitespace:=2)
     
+    Dim url As String
+    url = this.baseUrl & endpoint
+    
+    ' Configura o tempo limite
+    http.setTimeouts this.timeout, this.timeout, this.timeout, this.timeout
+    
+    ' Abre a requisição
+    http.Open method, url, False
+    
+    ' Configura os cabeçalhos
+    Dim key As Variant
+    For Each key In this.headers.Keys
+        http.setRequestHeader key, this.headers(key)
+    Next key
+    
+    ' Envia a requisição
+    On Error GoTo RequestError
+    http.Send this.data
+    On Error GoTo 0
+    
+    ' Retorna a resposta
+    request = http.responseText
     Exit Function
     
-ErrorHandler:
-    Send = "Erro ao enviar solicitação: " & Err.Description
+RequestError:
+    request = "Erro: " & Err.Description
 End Function
 
-Function GET_(url As String, Optional params As String)
-    Dim headers As Object
-    Set headers = CreateObject("Scripting.Dictionary")
-    headers("Content-Type") = "application/json"
-    headers("Authorization") = "Bearer " & Token
-    
-    With Me
-        .baseUrl = baseUrl & url & "?" & params
-        .method = 1
-        .headers = headers
-        GET_ = .Send(.ConfigAxios)
-    End With
+' Métodos auxiliares para atalhos de requisição
+Public Function get_(endpoint As String) As String
+    get_ = request("GET", endpoint)
 End Function
 
-Function POST_(url As String, data As Object)
-    Dim headers As Object
-    Set headers = CreateObject("Scripting.Dictionary")
-    headers("Content-Type") = "application/json"
-    headers("Authorization") = "Bearer " & Token
-    
-    With Me
-        .baseUrl = baseUrl & url
-        .method = 2
-        .data = data
-        .headers = headers
-        POST_ = .Send(.ConfigAxios)
-    End With
+Public Function post_(endpoint As String, Optional data As Object) As String
+    post_ = request("POST", endpoint, data)
 End Function
 
-Function PACTH_(url As String, data As Object)
-    Dim headers As Object
-    Set headers = CreateObject("Scripting.Dictionary")
-    headers("Content-Type") = "application/json"
-    headers("Authorization") = "Bearer " & Token
-    
-    With Me
-        .baseUrl = baseUrl & url
-        .method = 5
-        .data = data
-        .headers = headers
-        PACTH_ = .Send(.ConfigAxios)
-    End With
+Public Function put_(endpoint As String, Optional data As Object) As String
+    put_ = request("PUT", endpoint, data)
 End Function
-Function DELETE_(url As String)
-    Dim headers As Object
-    Set headers = CreateObject("Scripting.Dictionary")
-    headers("Content-Type") = "application/json"
-    headers("Authorization") = "Bearer " & Token
-    
-    With Me
-        .baseUrl = baseUrl & url
-        .method = 4
-        .headers = headers
-        DELETE_ = .Send(.ConfigAxios)
-    End With
+
+Public Function delete_(endpoint As String) As String
+    delete_ = request("DELETE", endpoint)
 End Function
